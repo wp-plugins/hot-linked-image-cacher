@@ -5,7 +5,7 @@ Website link: http://www.linewbie.com/wordpress-plugins/
 Tags: images, image cacher, pictures, hot linked, hotlinked, cache picture, picture cache, admin, post, links
 Requires at least: 1.5
 Tested up to: 2.3.1
-Stable tag: trunk
+Stable tag: 1.0
 
 Automatically search for Hot Linked Images within your posts and automatically cache the images locally and update the img links within your posts.
 
