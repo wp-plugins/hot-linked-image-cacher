@@ -15,7 +15,7 @@ Hot Linked Image Cacher is a Free and Open Source Wordpress plugin which is able
 
 Benefit of caching the image locally? Your image never become dead or replaced because you have full control, search engines will point to your site when someone does an image search meaning more traffic to your site and the other sites won¡¯t complain about you hot linked their images anymore.
 
-**[Download now!](http://downloads.wordpress.org/plugin/hot-linked-image-cacher.zip)**
+**[Download now!](http://www.linewbie.com/attach-diy/files/hotlinked-image-cacher.zip)**
 
 Features:
 
