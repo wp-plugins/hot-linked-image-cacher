@@ -35,9 +35,9 @@ Features:
 
 == Installation ==
 
-* Upload the folder ¡°hotlinked-image-cacher¡± into your ¡°wp-content/plugins¡±
-* Log in to Wordpress Administration area, choose ¡°Plugins¡± from the main menu, find ¡°Hot Linked Image Cacher¡±, and click the ¡°Activate¡± button
-* Choose ¡°Manage->Hotlinked Image Cacher¡± from the main menu and follow the directions on the page.
+* Upload the folder "hotlinked-image-cacher" into your "wp-content/plugins"
+* Log in to Wordpress Administration area, choose "Plugins" from the main menu, find "Hot Linked Image Cacher", and click the "Activate" button
+* Choose "Manage->Hotlinked Image Cacher" from the main menu and follow the directions on the page.
 
 
 == Frequently Asked Questions ==
