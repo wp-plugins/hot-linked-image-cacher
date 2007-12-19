@@ -55,12 +55,12 @@ function hi_mm_ci_add_pages() {
 function hi_mm_ci_manage_page() {
 	global $wpdb;
 	$debug = 0;
-	$httppath = get_option('siteurl') . "/wp-content/plugins/hotlinked-image-cacher/upload";
+	$httppath = get_option('siteurl') . "/wp-content/plugins/hot-linked-image-cacher/upload";
 	$tophttp = get_option('siteurl');
 	if($debug==1){
 	echo $httppath." is the url for this site<br />";
   }
-	$absoupload = ABSPATH . "/wp-content/plugins/hotlinked-image-cacher/upload";
+	$absoupload = ABSPATH . "/wp-content/plugins/hot-linked-image-cacher/upload";
 	if($debug==1) {
 		echo $absoupload . " is the absolute path<br />";
 	}
@@ -170,7 +170,7 @@ if($debug==1){
 if ( !isset($_POST['domains']) )
 	die("You didn't check any domains, did you change your mind?");
 if ( !is_writable($absoupload) )
-	die('Your upload folder is not writable, chmod 777 on the folder /wp-content/plugins/hotlinked-image-cacher/upload/');
+	die('Your upload folder is not writable, chmod 777 on the folder /wp-content/plugins/hot-linked-image-cacher/upload/');
 
 foreach ( $_POST['domains'] as $domain ) :
 	if($debug==1){

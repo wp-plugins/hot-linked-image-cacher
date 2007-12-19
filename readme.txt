@@ -15,7 +15,7 @@ Hot Linked Image Cacher is a Free and Open Source Wordpress plugin which is able
 
 Benefit of caching the image locally? Your image never become dead or replaced because you have full control, search engines will point to your site when someone does an image search meaning more traffic to your site and the other sites won't complain about you hot linked their images anymore.
 
-**[Download now!](http://www.linewbie.com/attach-diy/files/hotlinked-image-cacher.zip)**
+**[Download now!](http://www.linewbie.com/attach-diy/files/hot-linked-image-cacher.zip)**
 
 Features:
 
@@ -35,7 +35,7 @@ Features:
 
 == Installation ==
 
-* Upload the folder "hotlinked-image-cacher" into your "wp-content/plugins"
+* Upload the folder "hot-linked-image-cacher" into your "wp-content/plugins"
 * Log in to Wordpress Administration area, choose "Plugins" from the main menu, find "Hot Linked Image Cacher", and click the "Activate" button
 * Choose "Manage->Hotlinked Image Cacher" from the main menu and follow the directions on the page.
 
@@ -48,7 +48,7 @@ No the plugin will automatically generate the folders for you. They will all be 
 
 = Do I need to change the permission to 777 on the upload folder? =
 
-If you host has configured the server correctly, you won't have to. But if the plugin tell you the upload folder isn't writable. Then you have to change the upload folder to 777 (chmod 777). The upload folder is located under your hotlinked-image-cacher plugin folder
+If you host has configured the server correctly, you won't have to. But if the plugin tell you the upload folder isn't writable. Then you have to change the upload folder to 777 (chmod 777). The upload folder is located under your hot-linked-image-cacher plugin folder
 
 == Screenshots ==
 
