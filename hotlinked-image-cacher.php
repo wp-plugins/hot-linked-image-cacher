@@ -74,7 +74,7 @@ function hi_mm_ci_manage_page() {
 	<li>Enter the <b>post id</b> for the post you need to perform image cache on.</li>
 	<li>If you need to perform image cache on all post, then put <b>all</b> in the post id field.</li>
 	<li>Then you'll be presented with a list of domains, check the domains you want to grab the image from.</li>
-	<li>The images will be copied to your upload directory (this directory is under your hotlinked-image-cacher plugin directory and must be writable).</li>
+	<li>The images will be copied to your upload directory (this directory is under your hot-linked-image-cacher plugin directory and must be writable).</li>
 	<li>The img links in your posts will be updated to their new local url location automatically.</li>
 </ol>
 <form action="" method="post">
