@@ -4,7 +4,7 @@ Plugin Name: Hot Linked Image Cacher
 Plugin URI: http://www.linewbie.com/wordpress-plugins/
 Description: Goes through your posts and gives you the option to cache some or all hotlinked images locally in the upload folder of this plugin
 Version: 1.0
-Author: Jason W.
+Author: linewbie
 Author URI: http://www.linewbie.com
 WordPress Version Required: 1.5
 */
