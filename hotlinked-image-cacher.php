@@ -3,7 +3,7 @@
 Plugin Name: Hot Linked Image Cacher
 Plugin URI: http://www.linewbie.com/wordpress-plugins/
 Description: Goes through your posts and gives you the option to cache some or all hotlinked images locally in the upload folder of this plugin
-Version: 1.0
+Version: 1.01
 Author: linewbie
 Author URI: http://www.linewbie.com
 WordPress Version Required: 1.5
@@ -190,6 +190,11 @@ foreach ( $_POST['domains'] as $domain ) :
 	foreach ($posts as $post) :
 		preg_match_all('|<img.*?src=[\'"](.*?)[\'"].*?>|i', $post->post_content, $matches);
 		foreach ( $matches[1] as $url ) :
+		  $dummy5 = $url;
+		  $dummy2 = str_replace('http://', '', $url);
+      $dummy3 = str_replace('//', '/', $dummy2);
+      $dummy4 = 'http://'.$dummy3;
+      $url = $dummy4;
 		  $op1 = stristr( $url, $tophttp);
 			if ( $op1 === false ){
 				$msg = 'NOT LOCAL';
@@ -202,7 +207,7 @@ foreach ( $_POST['domains'] as $domain ) :
 	
 			hi_mkdirr( $dir );
 			$f        = fopen( $dir . '/' . $filename , 'w' );
-			if($urlmethod="curl" || is_null($urlmethod)){
+			if($urlmethod=="curl" || is_null($urlmethod)){
 			$url      = $b['scheme'] . '://' . $b['host'] . str_replace(' ', '%20', $b['path']) . $b['query'];
 			$ch = curl_init();
       $timeout = 5;
@@ -221,7 +226,7 @@ foreach ( $_POST['domains'] as $domain ) :
 				fwrite( $f, $img );
 				fclose( $f );
 				$local = $httppath . '/' . $domain . dirname ( $b['path'] ) . "/$filename";
-				$wpdb->query("UPDATE $wpdb->posts SET post_content = REPLACE(post_content, '$url', '$local');");
+				$wpdb->query("UPDATE $wpdb->posts SET post_content = REPLACE(post_content, '$dummy5', '$local');");
 				echo "<li>Cached $url</li>";
 				flush();
 			}
