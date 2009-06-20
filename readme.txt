@@ -13,6 +13,8 @@ Automatically search for Hot Linked Images within your posts and automatically c
 
 == Description ==
 
+Development since version 1.11 was done by Jeff Groves
+
 Hot Linked Image Cacher is a Free and Open Source Wordpress plugin which is able to **automatically** search for Hot Linked Images within your posts and **automatically** cache the images locally and update the img links within your posts. It doesn't matter if you have 1 post or 100,000 posts, it will handle it. You can control exactly which post to cache by optionally specifying a post id number (or just put all to cache all posts). You can also control exactly which domain to cache from by specifying domains. This plugin supports both curl and allow_url_fopen methods in getting remote files, so it doesn't matter which method your server support, we have it covered.
 
 Benefit of caching the image locally? Your image never become dead or replaced because you have full control, search engines will point to your site when someone does an image search meaning more traffic to your site and the other sites won't complain about you hot linked their images anymore.
