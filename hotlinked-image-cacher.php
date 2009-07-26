@@ -3,7 +3,7 @@
 Plugin Name: Hot Linked Image Cacher
 Plugin URI: http://www.linewbie.com/wordpress-plugins/
 Description: Goes through your posts and gives you the option to cache some or all hotlinked images locally in the upload folder of this plugin
-Version: 1.11
+Version: 1.13
 Author: linewbie
 Author URI: http://www.linewbie.com
 WordPress Version Required: 1.5
@@ -254,6 +254,20 @@ if ('3' == $_POST['step']) {
 function hlic_cache_img($postid, $opts) {
 	global $wpdb;
 
+	#
+	#  If the $create_md5_filename flag is true,
+	#  then create unique "anonymous" filenames for
+	#  each image. The filename is based on an
+	#  MD5 checksum of the file contents. Example:
+	#    http://www.mydomain.com/wp-content/uploads/HLIC/4105c83ca00b0e2801bc601f93a9d63e.gif	
+	#
+	#  If false, it will create a long
+	#  filename based on the original 
+	#  path. Example:
+	#    http://www.mydomain.com/wp-content/uploads/HLIC/www.olddomain.com/images/imagename.gif
+	#
+	$create_md5_filename = true;
+
 	static $suffix_map = array (
 		'image/gif'   => 'gif',
 		'image/jpeg'  => 'jpg',
@@ -321,7 +335,7 @@ function hlic_cache_img($postid, $opts) {
 				#  checksum of the image data.  Determine
 				#  filename suffix from mime content type.
 				#
-				if ($b['query']) {
+				if ($b['query'] || $create_md5_filename) {
 					$content_type = strtolower($info['content_type']);
 					$suffix = $suffix_map[$content_type];
 
@@ -353,7 +367,11 @@ function hlic_cache_img($postid, $opts) {
 			}
 		
 			if ($img) {
-				$dir = $abs_upload_dir.'/'.$b['host'].dirname($b['path']);
+				if ($create_md5_filename) {
+					$dir = $abs_upload_dir;
+				} else {
+					$dir = $abs_upload_dir.'/'.$b['host'].dirname($b['path']);
+				}
 				$dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
 	
 				hlic_mkdirr($dir);
@@ -370,7 +388,11 @@ function hlic_cache_img($postid, $opts) {
 					}
 					fclose($f);
 
-					$local_img_url = $httppath . '/' . $b['host'] . dirname($b['path']) . "/$filename";
+					if ($create_md5_filename) {
+						$local_img_url = $httppath . "/$filename";
+					} else {
+						$local_img_url = $httppath . '/' . $b['host'] . dirname($b['path']) . "/$filename";
+					}
 
 					#
 					#  If the image was saved successfully, then
@@ -429,8 +451,8 @@ function hlic_abs_upload_dir() {
 		$abs_upload_dir = ABSPATH.$old_hlic_upload_dir;
 	}
 
-	if (!is_dir($abs_upload_dir) || !$old_hlic_upload_dir) {
-		$abs_upload_dir = ABSPATH.get_option('upload_path').'/HLIC';
+	if (!$backward_compatible || !is_dir($abs_upload_dir) || !$old_hlic_upload_dir) {
+		$abs_upload_dir = get_option('upload_path').'/HLIC';
 	}
 	return $abs_upload_dir;
 }
