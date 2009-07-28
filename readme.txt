@@ -5,7 +5,7 @@ Website link: http://www.linewbie.com/wordpress-plugins/
 Tags: images, image cacher, pictures, hot linked, hotlinked, cache picture, picture cache, admin, post, links
 Requires at least: 1.5
 Tested up to: 2.8
-Stable tag: 1.13
+Stable tag: 1.14
 
 Development since version 1.11 was done by Jeff Groves
 

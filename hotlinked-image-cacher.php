@@ -3,7 +3,7 @@
 Plugin Name: Hot Linked Image Cacher
 Plugin URI: http://www.linewbie.com/wordpress-plugins/
 Description: Goes through your posts and gives you the option to cache some or all hotlinked images locally in the upload folder of this plugin
-Version: 1.13
+Version: 1.14
 Author: linewbie
 Author URI: http://www.linewbie.com
 WordPress Version Required: 1.5
@@ -46,7 +46,8 @@ function hlic_mkdirr($pathname, $mode = 0777) { // Recursive, Hat tip: PHP.net
 	$next_pathname = substr( $pathname, 0, strrpos($pathname, DIRECTORY_SEPARATOR) );
 	if ( hlic_mkdirr($next_pathname, $mode) ) {
 		if (!file_exists($pathname)) {
-			return mkdir($pathname, $mode);
+			$rtn = mkdir($pathname, $mode);
+			return $rtn;
 		}
 	}
 
@@ -64,7 +65,7 @@ function hlic_mm_ci_manage_page() {
 	$debug = 0;
 
 	$abs_upload_dir = hlic_abs_upload_dir();
-	$hlic_upload_dir = preg_replace('/^'.preg_quote(ABSPATH, '/').'/i', '', $abs_upload_dir);
+	$hlic_upload_dir = hlic_upload_dir();
 
 	if ($debug==1) {
 		echo $abs_upload_dir . " is the absolute path<br />";
@@ -279,7 +280,7 @@ function hlic_cache_img($postid, $opts) {
 	$my_host = $my['host'];
 
 	$abs_upload_dir = hlic_abs_upload_dir();
-	$hlic_upload_dir = preg_replace('/^'.preg_quote(ABSPATH, '/').'/i', '', $abs_upload_dir);
+	$hlic_upload_dir = hlic_upload_dir();
 	$httppath = get_option('siteurl') . "/".$hlic_upload_dir;
 
 	$post = $wpdb->get_results("SELECT post_content FROM $wpdb->posts WHERE ID = '$postid'");
@@ -436,7 +437,11 @@ function hlic_save_post($postid) {
 	return $postid;
 }
 
-function hlic_abs_upload_dir() {
+
+#
+#  Return relative path to upload directory
+#
+function hlic_upload_dir() {
 	#
 	#  For backwards-compatibility use old directory if it exists.
 	#
@@ -448,12 +453,20 @@ function hlic_abs_upload_dir() {
 
 	if ($backwards_compatible) {
 		$old_hlic_upload_dir = "wp-content/plugins/hot-linked-image-cacher/upload";
+		$upload_dir = $old_hlic_upload_dir;
 		$abs_upload_dir = ABSPATH.$old_hlic_upload_dir;
 	}
 
-	if (!$backward_compatible || !is_dir($abs_upload_dir) || !$old_hlic_upload_dir) {
-		$abs_upload_dir = get_option('upload_path').'/HLIC';
+	if (!$backward_compatible || !$old_hlic_upload_dir || !$is_dir($abs_upload_dir)) {
+		$upload_dir = get_option('upload_path').'/HLIC';
 	}
+	return $upload_dir;
+}
+
+
+
+function hlic_abs_upload_dir() {
+	$abs_upload_dir = ABSPATH.hlic_upload_dir();
 	return $abs_upload_dir;
 }
 
