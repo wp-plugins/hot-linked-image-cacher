@@ -3,7 +3,7 @@
 Plugin Name: Hot Linked Image Cacher
 Plugin URI: http://www.linewbie.com/wordpress-plugins/
 Description: Goes through your posts and gives you the option to cache some or all hotlinked images locally in the upload folder of this plugin
-Version: 1.14
+Version: 1.16
 Author: linewbie
 Author URI: http://www.linewbie.com
 WordPress Version Required: 1.5
@@ -65,7 +65,7 @@ function hlic_mm_ci_manage_page() {
 	$debug = 0;
 
 	$abs_upload_dir = hlic_abs_upload_dir();
-	$hlic_upload_dir = hlic_upload_dir();
+	$upload_dir = hlic_upload_dir();
 
 	if ($debug==1) {
 		echo $abs_upload_dir . " is the absolute path<br />";
@@ -80,10 +80,14 @@ function hlic_mm_ci_manage_page() {
 <?php
 if ( !isset($_POST['step']) ) {
 ?>
+<? if (0) { # jjj ?>
+<p>jjj upload_dir = <?=$upload_dir?></p>
+<p>jjj abs_upload_dir = <?=$abs_upload_dir?></p>
+<? } ?>
 <p>Here's how this plugin works:</p>
 <ol>
 	<li>After you make a post that contains images from another website (&quot;hot-linked&quot; images), it will automatically download those images and save a local copy.  If the download is successful, then the &lt;img src=...&gt; links in your posts will be updated to reference the new local copy of the image.</li>
-	<li>Cached images will be copied to your local <b><?=$hlic_upload_dir?></b> directory (this directory must be writable).</li>
+	<li>Cached images will be copied to your local <b><?=$upload_dir?></b> directory (this directory must be writable).</li>
 	<li>Please note that once an image is cached, this is NOT REVERSIBLE.  If you remove or disable this plugin, the &lt;img src=...&gt; links in your posts will still reference the local cache copy.</li>
 	<li>To cache the images for an existing post, enter the <b>post id</b> in the field below.</li>
 	<li>If you want to perform image cache on all posts, then enter <b>ALL</b> in the post id field.</li>
@@ -269,6 +273,8 @@ function hlic_cache_img($postid, $opts) {
 	#
 	$create_md5_filename = true;
 
+	$min_img_size = 20;  # minimum size of image file
+
 	static $suffix_map = array (
 		'image/gif'   => 'gif',
 		'image/jpeg'  => 'jpg',
@@ -280,8 +286,8 @@ function hlic_cache_img($postid, $opts) {
 	$my_host = $my['host'];
 
 	$abs_upload_dir = hlic_abs_upload_dir();
-	$hlic_upload_dir = hlic_upload_dir();
-	$httppath = get_option('siteurl') . "/".$hlic_upload_dir;
+	$upload_dir = hlic_upload_dir();
+	$httppath = get_option('siteurl') . "/".$upload_dir;
 
 	$post = $wpdb->get_results("SELECT post_content FROM $wpdb->posts WHERE ID = '$postid'");
 	$post_content = $post[0]->post_content;
@@ -320,8 +326,15 @@ function hlic_cache_img($postid, $opts) {
 			if ($opts['urlmethod'] == "curl" || is_null($opts['urlmethod'])) {
 				$ch = curl_init();
 				$timeout = 5;
+
 				curl_setopt($ch, CURLOPT_URL, $url);
 				curl_setopt($ch, CURLOPT_HEADER, 0);
+			
+				# set referer to home page of the same site
+				$referer = $b['scheme'] . '://' . $b['host'] . '/';
+				curl_setopt($ch, CURLOPT_REFERER, $referer);
+				curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 				curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6pre) Gecko/2009011606 Firefox/3.1');
 				curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
@@ -382,7 +395,12 @@ function hlic_cache_img($postid, $opts) {
 				if ($f) {
 					$img_size = strlen($img);
 					$write_size = fwrite($f, $img);
-					if ($write_size == $img_size) {
+
+					#
+					#  Make sure that read/write counts match and
+					#  we have enough data to be an image file.
+					#
+					if (($write_size == $img_size) && ($img_size > $min_img_size) && ($write_size > $min_img_size)) {
 						$img_saved = true;
 					} else {
 						$img_saved = false;
@@ -406,10 +424,20 @@ function hlic_cache_img($postid, $opts) {
 							echo "<li>ID: $postid, Cached: $img_url =&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;$local_img_url</li>";
 							flush();
 						}
+					} else {
+						#
+						#  If we could not read/write the image properly,
+						#  then delete file and issue error.
+						#
+						unlink($pathname);
+						if ($opts['show_progress']) {
+							echo "<li>ERROR: ID $postid, unable to cache image '".$img_url."'</li>";
+							flush();
+						}
 					}
 				} else {
 					if ($opts['show_progress']) {
-						echo "<li>ERROR: unable to open '".$pathname."' for writing</li>";
+						echo "<li>ERROR: ID $postid, unable to open '".$pathname."' for writing</li>";
 						flush();
 					}
 				}
@@ -443,6 +471,14 @@ function hlic_save_post($postid) {
 #
 function hlic_upload_dir() {
 	#
+	#  make sure abspath has trailing slash
+	#
+	$abspath = ABSPATH;
+	if (!preg_match('/\/$/', $abspath)) {
+		$abspath = $abspath . '/';
+	}
+
+	#
 	#  For backwards-compatibility use old directory if it exists.
 	#
 	#  On new installations, use the 'upload_path' setting (from
@@ -454,19 +490,34 @@ function hlic_upload_dir() {
 	if ($backwards_compatible) {
 		$old_hlic_upload_dir = "wp-content/plugins/hot-linked-image-cacher/upload";
 		$upload_dir = $old_hlic_upload_dir;
-		$abs_upload_dir = ABSPATH.$old_hlic_upload_dir;
+		$abs_upload_dir = $abspath.$old_hlic_upload_dir;
 	}
 
 	if (!$backward_compatible || !$old_hlic_upload_dir || !$is_dir($abs_upload_dir)) {
 		$upload_dir = get_option('upload_path').'/HLIC';
 	}
+
+	#
+	#  Remove any abspath from upload_dir
+	#
+	$pattern = '/^'.preg_quote($abspath, '/').'/';
+	$upload_dir = preg_replace($pattern, '', $upload_dir);
 	return $upload_dir;
 }
 
-
-
+#
+#  Return absolute path to upload directory
+#
 function hlic_abs_upload_dir() {
-	$abs_upload_dir = ABSPATH.hlic_upload_dir();
+	#
+	#  make sure abspath has trailing slash
+	#
+	$abspath = ABSPATH;
+	if (!preg_match('/\/$/', $abspath)) {
+		$abspath = $abspath . '/';
+	}
+
+	$abs_upload_dir = $abspath.hlic_upload_dir();
 	return $abs_upload_dir;
 }
 
